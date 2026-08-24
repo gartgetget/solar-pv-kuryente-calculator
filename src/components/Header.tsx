@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                  <span>Solar PV & Kuryente Calculator</span>
+                  <span>5A Solar Calculator</span>
                 </h1>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                   Pilipinas

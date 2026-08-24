@@ -1,5 +1,5 @@
 {
-  "name": "Solar PV & Kuryente Calculator",
+  "name": "5A Solar PV Calculator",
   "description": "Kalkulahin ang tamang sukat ng Solar PV system, Inverter (kW), bilang ng solar panels, at matitipid sa kuryente mula sa inyong monthly bill (kWh).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

@@ -144,7 +144,7 @@ export default function App() {
               <Sun className="w-4 h-4" />
             </div>
             <span className="font-semibold text-slate-300">
-              Solar PV & Kuryente Calculator (Pilipinas)
+              5A Solar PV Calculator
             </span>
           </div>
 
@@ -157,7 +157,7 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1 text-slate-500">
-            <span>Powered by Gemini & Solar PV Engineering</span>
+            <span>Powered by 5A Developer & 5A Solar Engineering</span>
           </div>
         </div>
       </footer>
