@@ -14,7 +14,7 @@ export interface SolarCalculationInputs {
   psh: number;
   systemLossPercent: number; // e.g. 20 for 20% loss (80% efficiency)
   panelWattage: number; // e.g. 650W
-  electricityRatePhp: number; // e.g. 14.7833 PHP/kWh
+  electricityRatePhp: number; // e.g. 16 PHP/kWh
   systemCostPerWattPhp: number; // e.g. 42 PHP/Watt turnkey
   targetOffsetPercent: number; // e.g. 100%
   selectedRegionId?: string;
@@ -42,6 +42,7 @@ export interface SolarCalculationResults {
   inverterDcAcRatio: number; // DC to AC ratio
   
   // Panel Count & Physical Size
+  standardSystemSizeKw: number;
   numberOfPanels: number;
   actualInstalledPvKw: number;
   roofAreaSqMeters: number;

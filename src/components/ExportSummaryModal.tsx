@@ -57,7 +57,7 @@ Petsa: ${formattedDate}
 
 2. REKOMENDADONG SOLAR SYSTEM DESIGN
 • Base PV Capacity: ${formatNumber(results.basePvKw, 3)} kW
-• Rekomendadong PV Size: ${formatNumber(results.recommendedPvKw, 2)} kWp
+• Rekomendadong PV Size: ${formatNumber(results.recommendedPvKw, 2)} kWp${results.standardSystemSizeKw > 0 ? `\n• Standard System Size: ${results.standardSystemSizeKw}kW` : ''}
 • Aktwal na Ikakabit na PV: ${formatNumber(results.actualInstalledPvKw, 2)} kWp
 • Bilang ng Solar Panels: ${results.numberOfPanels} piraso × ${inputs.panelWattage}W Mono
 • Rekomendadong Inverter (Swak/Malakas): ${results.recommendedInverterKw} kW String Inverter
@@ -86,7 +86,7 @@ Date: ${formattedDate}
 
 2. RECOMMENDED SYSTEM SPECIFICATION
 • Base PV Capacity: ${formatNumber(results.basePvKw, 3)} kW
-• Recommended PV Size: ${formatNumber(results.recommendedPvKw, 2)} kWp
+• Recommended PV Size: ${formatNumber(results.recommendedPvKw, 2)} kWp${results.standardSystemSizeKw > 0 ? `\n• Standard System Size: ${results.standardSystemSizeKw}kW` : ''}
 • Actual Installed PV: ${formatNumber(results.actualInstalledPvKw, 2)} kWp
 • Solar Panels: ${results.numberOfPanels} pcs × ${inputs.panelWattage}W Tier-1 Mono
 • Recommended Inverter: ${results.recommendedInverterKw} kW Inverter (Optimal Headroom)

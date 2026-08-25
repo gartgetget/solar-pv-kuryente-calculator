@@ -10,12 +10,13 @@ import {
   Info,
   CheckCircle2
 } from 'lucide-react';
-import { Language, SolarCalculationResults } from '../types';
+import { Language, SolarCalculationResults, SolarCalculationInputs } from '../types';
 import { formatNumber } from '../utils/solarCalculations';
 
 interface StepByStepFormulaCardProps {
   lang: Language;
   results: SolarCalculationResults;
+  inputs: SolarCalculationInputs;
   days: number;
   psh: number;
   systemLossPercent: number;
@@ -24,6 +25,7 @@ interface StepByStepFormulaCardProps {
 export const StepByStepFormulaCard: React.FC<StepByStepFormulaCardProps> = ({
   lang,
   results,
+  inputs,
   days,
   psh,
   systemLossPercent,
@@ -197,7 +199,7 @@ export const StepByStepFormulaCard: React.FC<StepByStepFormulaCardProps> = ({
           </div>
 
           <div className="pt-2 border-t border-amber-500/30 space-y-2">
-            {/* Recommended 6kW option */}
+            {/* Recommended inverter option */}
             <div className="bg-slate-900/90 p-2 rounded-lg border border-amber-500/30">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
@@ -209,13 +211,17 @@ export const StepByStepFormulaCard: React.FC<StepByStepFormulaCardProps> = ({
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 mt-0.5">
-                {isTl
-                  ? 'May sapat na allowance, mas malakas na output, pwedeng dagdagan ng panels'
-                  : 'Full peak output & expansion headroom'}
+                {results.standardSystemSizeKw > 0
+                  ? (isTl
+                    ? `${results.numberOfPanels} × ${inputs.panelWattage}W = ${formatNumber(results.actualInstalledPvKw, 2)} kWp (> ${results.standardSystemSizeKw}kW standard)`
+                    : `${results.numberOfPanels} × ${inputs.panelWattage}W = ${formatNumber(results.actualInstalledPvKw, 2)} kWp (> ${results.standardSystemSizeKw}kW standard)`)
+                  : (isTl
+                    ? 'May sapat na allowance, mas malakas na output, pwedeng dagdagan ng panels'
+                    : 'Full peak output & expansion headroom')}
               </p>
             </div>
 
-            {/* Saktuhan / 4kW option */}
+            {/* Saktuhan / Budget option */}
             <div className="bg-slate-900/60 p-2 rounded-lg border border-slate-700/60">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-300">
@@ -245,11 +251,21 @@ export const StepByStepFormulaCard: React.FC<StepByStepFormulaCardProps> = ({
           </span>
           {isTl ? (
             <span>
-              Ang inyong konsumo na <strong>{formatNumber(results.monthlyKwh, 0)} kWh</strong> ay hinati sa <strong>{days} araw</strong> ng buwan para makuha ang <strong>{formatNumber(results.dailyKwh, 2)} kWh/araw</strong>. Hinati ito sa <strong>{psh} PSH</strong> (kalakasan ng araw) upang makuha ang <strong>{formatNumber(results.basePvKw, 3)} kW</strong> base PV. Isinama natin ang <strong>{systemLossPercent}% system loss</strong> (hinati sa {efficiencyPercent}%), kaya ang kailangan ninyong PV ay <strong>{formatNumber(results.recommendedPvKw, 2)} kWp</strong>. Mula rito, pwede ninyong gamitin ang <strong>{results.recommendedInverterKw} kW Inverter</strong> para mas swak at malakas, o kaya naman ang <strong>{results.minimumInverterKw} kW Inverter</strong> kung saktuhan lang ang inyong disenyo.
+              Ang inyong konsumo na <strong>{formatNumber(results.monthlyKwh, 0)} kWh</strong> ay hinati sa <strong>{days} araw</strong> ng buwan para makuha ang <strong>{formatNumber(results.dailyKwh, 2)} kWh/araw</strong>. Hinati ito sa <strong>{psh} PSH</strong> (kalakasan ng araw) upang makuha ang <strong>{formatNumber(results.basePvKw, 3)} kW</strong> base PV. Isinama natin ang <strong>{systemLossPercent}% system loss</strong> (hinati sa {efficiencyPercent}%), kaya ang kailangan ninyong PV ay <strong>{formatNumber(results.recommendedPvKw, 2)} kWp</strong>.
+              {results.standardSystemSizeKw > 0 ? (
+                <span> Ito ay i-snapped sa <strong>{results.standardSystemSizeKw}kW standard size</strong>, kaya kailangan ng <strong>{results.numberOfPanels} piraso × {inputs.panelWattage}W = {formatNumber(results.actualInstalledPvKw, 2)} kWp</strong> ({formatNumber(results.actualInstalledPvKw, 2)}kW &gt; {results.standardSystemSizeKw}kW). Mula rito, pwede ninyong gamitin ang <strong>{results.recommendedInverterKw} kW Inverter</strong> para mas swak at malakas, o kaya naman ang <strong>{results.minimumInverterKw} kW Inverter</strong> kung saktuhan lang ang inyong disenyo.</span>
+              ) : (
+                <span> Mula rito, pwede ninyong gamitin ang <strong>{results.recommendedInverterKw} kW Inverter</strong> para mas swak at malakas, o kaya naman ang <strong>{results.minimumInverterKw} kW Inverter</strong> kung saktuhan lang ang inyong disenyo.</span>
+              )}
             </span>
           ) : (
             <span>
-              Your monthly consumption of <strong>{formatNumber(results.monthlyKwh, 0)} kWh</strong> is divided by <strong>{days} days</strong> = <strong>{formatNumber(results.dailyKwh, 2)} kWh/day</strong>. Dividing this by <strong>{psh} Peak Sun Hours</strong> gives <strong>{formatNumber(results.basePvKw, 3)} kW</strong> base PV. Accounting for <strong>{systemLossPercent}% system loss</strong> (dividing by {efficiencyPercent}%) yields a recommended <strong>{formatNumber(results.recommendedPvKw, 2)} kWp</strong> Solar PV. From here, you can choose a <strong>{results.recommendedInverterKw} kW Inverter</strong> for strong headroom and peak performance, or a <strong>{results.minimumInverterKw} kW Inverter</strong> for a cost-effective budget design.
+              Your monthly consumption of <strong>{formatNumber(results.monthlyKwh, 0)} kWh</strong> is divided by <strong>{days} days</strong> = <strong>{formatNumber(results.dailyKwh, 2)} kWh/day</strong>. Dividing this by <strong>{psh} Peak Sun Hours</strong> gives <strong>{formatNumber(results.basePvKw, 3)} kW</strong> base PV. Accounting for <strong>{systemLossPercent}% system loss</strong> (dividing by {efficiencyPercent}%) yields a recommended <strong>{formatNumber(results.recommendedPvKw, 2)} kWp</strong> Solar PV.
+              {results.standardSystemSizeKw > 0 ? (
+                <span> This is snapped to the <strong>{results.standardSystemSizeKw}kW standard size</strong>, requiring <strong>{results.numberOfPanels} pcs × {inputs.panelWattage}W = {formatNumber(results.actualInstalledPvKw, 2)} kWp</strong> ({formatNumber(results.actualInstalledPvKw, 2)}kW &gt; {results.standardSystemSizeKw}kW). From here, you can choose a <strong>{results.recommendedInverterKw} kW Inverter</strong> for strong headroom and peak performance, or a <strong>{results.minimumInverterKw} kW Inverter</strong> for a cost-effective budget design.</span>
+              ) : (
+                <span> From here, you can choose a <strong>{results.recommendedInverterKw} kW Inverter</strong> for strong headroom and peak performance, or a <strong>{results.minimumInverterKw} kW Inverter</strong> for a cost-effective budget design.</span>
+              )}
             </span>
           )}
         </div>

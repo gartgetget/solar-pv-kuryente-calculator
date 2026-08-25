@@ -47,7 +47,7 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
   const handleBillChange = (billPhp: number) => {
     const safeBill = Math.max(100, billPhp);
     setBillInputAmount(safeBill);
-    const calculatedKwh = Math.round(safeBill / (inputs.electricityRatePhp || 14.7833));
+    const calculatedKwh = Math.round(safeBill / (inputs.electricityRatePhp || 16));
     onChange({ monthlyKwh: Math.max(10, calculatedKwh) });
   };
 
@@ -456,7 +456,7 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
                   min="5"
                   max="30"
                   value={inputs.electricityRatePhp}
-                  onChange={(e) => onChange({ electricityRatePhp: Number(e.target.value) || 14.7833 })}
+                  onChange={(e) => onChange({ electricityRatePhp: Number(e.target.value) || 16 })}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-white"
                 />
               </div>

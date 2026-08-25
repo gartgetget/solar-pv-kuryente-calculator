@@ -12,12 +12,12 @@ import { ExportSummaryModal } from './components/ExportSummaryModal';
 import { Sun, Heart, Sparkles, ShieldCheck } from 'lucide-react';
 
 const DEFAULT_INPUTS: SolarCalculationInputs = {
-  monthlyKwh: 587, // Exact user prompt default
+  monthlyKwh: 0, // Exact user prompt default
   daysInMonth: 30,
   psh: 4.5, // Peak Sun Hours
   systemLossPercent: 20, // 20% system loss -> 80% efficiency
   panelWattage: 650, // 650W Tier-1 N-Type Mono
-  electricityRatePhp: 14.7833, // Updated DU residential tariff
+  electricityRatePhp: 16, // Updated DU residential tariff
   systemCostPerWattPhp: 42, // Turnkey cost per watt in PH
   targetOffsetPercent: 100, // 100% Net zero
   selectedRegionId: 'ncr',
@@ -77,6 +77,7 @@ export default function App() {
           <StepByStepFormulaCard
             lang={lang}
             results={results}
+            inputs={inputs}
             days={inputs.daysInMonth}
             psh={inputs.psh}
             systemLossPercent={inputs.systemLossPercent}

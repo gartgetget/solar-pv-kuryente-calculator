@@ -1,5 +1,7 @@
 import { SolarCalculationInputs, SolarCalculationResults, CalculationPreset } from '../types';
 
+const STANDARD_SYSTEM_SIZES = [3, 4, 5, 6, 8, 12, 16];
+
 export function calculateSolarSystem(inputs: SolarCalculationInputs): SolarCalculationResults {
   const {
     monthlyKwh,
@@ -7,7 +9,7 @@ export function calculateSolarSystem(inputs: SolarCalculationInputs): SolarCalcu
     psh = 4.5,
     systemLossPercent = 20,
     panelWattage = 650,
-    electricityRatePhp = 14.7833,
+    electricityRatePhp = 16,
     systemCostPerWattPhp = 42,
     targetOffsetPercent = 100,
   } = inputs;
@@ -30,29 +32,32 @@ export function calculateSolarSystem(inputs: SolarCalculationInputs): SolarCalcu
 
   // Step 5: Number of panels and actual installed capacity
   const safePanelWattage = panelWattage > 0 ? panelWattage : 650;
-  // Round up to nearest integer panel count
-  const numberOfPanels = Math.max(1, Math.ceil(recommendedPvWatts / safePanelWattage));
+
+  let standardSystemSizeKw = 0;
+  let numberOfPanels: number;
+
+  if (recommendedPvKw < 3) {
+    numberOfPanels = Math.max(1, Math.ceil(recommendedPvWatts / safePanelWattage));
+  } else {
+    standardSystemSizeKw = STANDARD_SYSTEM_SIZES.find(s => s >= recommendedPvKw) || 16;
+    numberOfPanels = Math.ceil((standardSystemSizeKw * 1000) / safePanelWattage);
+  }
+
   const actualInstalledPvKw = (numberOfPanels * safePanelWattage) / 1000;
 
   // Step 6: Inverter sizing logic
-  // Standard solar engineering in PH:
-  // - "Saktuhan / Budget Fit" is DC:AC ratio around 1.15 to 1.30 (or closest standard inverter size below/equal)
-  // - "Malakas / Swak / Recommended with Headroom" gives 1.0 to 1.1x ratio or next standard commercial size (e.g. 6kW for 5.4kWp)
-  
-  // Available standard on-grid/hybrid residential inverter sizes in Philippines (kW):
-  // 1, 1.5, 2, 3, 3.6, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 50
   const standardInverters = [1, 1.5, 2, 3, 3.6, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50];
-  
-  // Find recommended inverter size (often >= PV kW for headroom, or standard sizing rule e.g. 5.4kW PV -> 6kW inverter)
-  let recommendedInverterKw = standardInverters.find(inv => inv >= recommendedPvKw) || Math.ceil(recommendedPvKw);
-  if (recommendedPvKw >= 4.2 && recommendedPvKw <= 5.8) {
-    recommendedInverterKw = 6; // Exact match to user rule for 5.4kW system
-  }
 
-  // Budget / Saktuhan inverter size (e.g. 4kW or 5kW for 5.4kWp PV with 1.25x DC/AC oversizing)
-  let minimumInverterKw = standardInverters.slice().reverse().find(inv => inv <= recommendedPvKw * 0.9) || 3;
-  if (recommendedPvKw >= 4.8 && recommendedPvKw <= 5.8) {
-    minimumInverterKw = 4; // As noted in user prompt: "o kaya naman ang 4kw kung saktuhan lang"
+  let recommendedInverterKw: number;
+  let minimumInverterKw: number;
+
+  if (standardSystemSizeKw > 0) {
+    recommendedInverterKw = standardSystemSizeKw;
+    const idx = STANDARD_SYSTEM_SIZES.indexOf(standardSystemSizeKw);
+    minimumInverterKw = idx > 0 ? STANDARD_SYSTEM_SIZES[idx - 1] : Math.floor(recommendedPvKw);
+  } else {
+    recommendedInverterKw = standardInverters.find(inv => inv >= recommendedPvKw) || Math.ceil(recommendedPvKw);
+    minimumInverterKw = standardInverters.slice().reverse().find(inv => inv <= recommendedPvKw * 0.9) || 3;
   }
 
   const inverterDcAcRatio = actualInstalledPvKw / (recommendedInverterKw || 1);
@@ -97,6 +102,7 @@ export function calculateSolarSystem(inputs: SolarCalculationInputs): SolarCalcu
     basePvKw,
     recommendedPvKw,
     recommendedPvWatts,
+    standardSystemSizeKw,
     recommendedInverterKw,
     minimumInverterKw,
     inverterDcAcRatio,
@@ -127,7 +133,7 @@ export const POPULAR_PRESETS: CalculationPreset[] = [
     descriptionTl: '587 kWh/buwan ➔ 5.43 kW PV ➔ 6kW Inverter (Swak) o 4kW (Saktuhan)',
     descriptionEn: '587 kWh/month ➔ 5.43 kW PV ➔ 6kW Inverter (Optimal) or 4kW (Budget)',
     monthlyKwh: 587,
-    electricityRate: 14.7833,
+    electricityRate: 16,
     badge: 'Eksaktong Halimbawa',
   },
   {
@@ -137,7 +143,7 @@ export const POPULAR_PRESETS: CalculationPreset[] = [
     descriptionTl: 'Ilaw, electric fan, TV, ref. Karaniwang ₱2,500/buwan na bill.',
     descriptionEn: 'Lighting, fans, TV, ref. Typical ₱2,500/month bill.',
     monthlyKwh: 200,
-    electricityRate: 14.7833,
+    electricityRate: 16,
   },
   {
     id: 'typical_family',
@@ -146,7 +152,7 @@ export const POPULAR_PRESETS: CalculationPreset[] = [
     descriptionTl: '1 inverter aircon gabi/araw + mga gamit. Bill na ~₱5,000/buwan.',
     descriptionEn: '1 inverter aircon + appliances. Bill ~₱5,000/month.',
     monthlyKwh: 400,
-    electricityRate: 14.7833,
+    electricityRate: 16,
   },
   {
     id: 'heavy_cooling',
@@ -155,7 +161,7 @@ export const POPULAR_PRESETS: CalculationPreset[] = [
     descriptionTl: '2-3 Inverter aircons, induction, heaters. Bill na ~₱10,500/buwan.',
     descriptionEn: '2-3 Inverter aircons, induction, heater. Bill ~₱10,500/month.',
     monthlyKwh: 850,
-    electricityRate: 14.7833,
+    electricityRate: 16,
   },
   {
     id: 'commercial_shop',
@@ -164,7 +170,7 @@ export const POPULAR_PRESETS: CalculationPreset[] = [
     descriptionTl: 'Pang-umagang gamit, chiller, freezer, computers. Bill ~₱19,000/buwan.',
     descriptionEn: 'Daytime chillers, freezers, computers. Bill ~₱19,000/month.',
     monthlyKwh: 1500,
-    electricityRate: 14.7833,
+    electricityRate: 16,
   },
 ];
 

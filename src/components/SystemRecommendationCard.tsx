@@ -78,8 +78,8 @@ export const SystemRecommendationCard: React.FC<SystemRecommendationCardProps> =
             </div>
             <div className="text-xs text-slate-400 mt-1">
               {isTl
-                ? `Aktwal na ikakabit: ${formatNumber(results.actualInstalledPvKw, 2)} kWp`
-                : `Actual installed: ${formatNumber(results.actualInstalledPvKw, 2)} kWp`}
+                ? `Aktwal na ikakabit: ${formatNumber(results.actualInstalledPvKw, 2)} kWp${results.standardSystemSizeKw > 0 ? ` (> ${results.standardSystemSizeKw}kW standard)` : ''}`
+                : `Actual installed: ${formatNumber(results.actualInstalledPvKw, 2)} kWp${results.standardSystemSizeKw > 0 ? ` (> ${results.standardSystemSizeKw}kW standard)` : ''}`}
             </div>
           </div>
         </div>
@@ -105,7 +105,7 @@ export const SystemRecommendationCard: React.FC<SystemRecommendationCardProps> =
               </span>
             </div>
             <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-              <span>{isTl ? '6kW (Swak) / 4kW (Saktuhan)' : '6kW (Optimal) / 4kW (Budget)'}</span>
+              <span>{isTl ? `${results.recommendedInverterKw}kW (Swak) / ${results.minimumInverterKw}kW (Saktuhan)` : `${results.recommendedInverterKw}kW (Optimal) / ${results.minimumInverterKw}kW (Budget)`}</span>
             </div>
           </div>
         </div>
@@ -130,6 +130,11 @@ export const SystemRecommendationCard: React.FC<SystemRecommendationCardProps> =
               {isTl
                 ? `${results.numberOfPanels} × ${inputs.panelWattage}W = ${formatNumber(results.actualInstalledPvKw, 2)} kWp`
                 : `${results.numberOfPanels} × ${inputs.panelWattage}W = ${formatNumber(results.actualInstalledPvKw, 2)} kWp`}
+              {results.standardSystemSizeKw > 0 && (
+                <span className="text-emerald-400 ml-1">
+                  {isTl ? `(> ${results.standardSystemSizeKw}kW)` : `(> ${results.standardSystemSizeKw}kW)`}
+                </span>
+              )}
             </div>
           </div>
         </div>
